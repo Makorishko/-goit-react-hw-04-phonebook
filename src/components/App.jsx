@@ -5,8 +5,14 @@ import { ContactList } from './list/list';
 import { Wrapper } from './wrapper-styled';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(localStorage.getItem('contacts')) || []
+  );
   const [filters, setFilters] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   const addContact = newContact => {
     const isSame = contacts.find(
@@ -37,22 +43,6 @@ export const App = () => {
       return [];
     }
   };
-
-  useEffect(() => {
-    const savedContacts = localStorage.getItem('contacts');
-    if (savedContacts && savedContacts.length) {
-      setContacts(() => JSON.parse(savedContacts));
-    }
-  }, []);
-
-  useEffect(
-    (_, prevState) => {
-      if (contacts !== prevState) {
-        localStorage.setItem('contacts', JSON.stringify(contacts));
-      }
-    },
-    [contacts]
-  );
 
   const filteredList = getFilteredList();
   return (
